@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "50880071820",
+    "project_id": "accioncolectiva-4c17c",
+    "storage_bucket": "accioncolectiva-4c17c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50880071820:android:1c893b78b2528a7a5e53a9",
+        "android_client_info": {
+          "package_name": "com.example.accioncolectiva"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU6pk-NLQx2HuEBGtMQ9PJ_0SkJDlpw8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
