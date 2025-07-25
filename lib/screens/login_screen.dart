@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home_screen.dart';
-import 'login_screen.dart';
+import '/screens/register_screen.dart';
 
-class RegisterScreen extends StatelessWidget {
-  final TextEditingController usernameCtrl = TextEditingController();
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
 
-   RegisterScreen({super.key});
-
-  void registerUser(BuildContext context) async {
-    final String username = usernameCtrl.text.trim();
+  void loginUser() async {
     final String email = emailCtrl.text.trim();
     final String password = passwordCtrl.text;
 
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Completa todos los campos')),
       );
@@ -23,34 +26,34 @@ class RegisterScreen extends StatelessWidget {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('users').add({
-        'username': username,
-        'email': email,
-        'password': password, // en una app real, deberías hashearla
-      });
+      final usersRef = FirebaseFirestore.instance.collection('users');
+      final snapshot = await usersRef
+          .where('email', isEqualTo: email)
+          .where('password', isEqualTo: password)
+          .get();
 
-      // Limpiar campos
-      usernameCtrl.clear();
-      emailCtrl.clear();
-      passwordCtrl.clear();
-
-      // Navegar a HomeScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
+      if (snapshot.docs.isNotEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Credenciales inválidas')));
+      }
     } catch (e) {
-      print('Error al registrar usuario: $e');
+      print('Error al iniciar sesión: $e');
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Error al registrar')));
+      ).showSnackBar(const SnackBar(content: Text('Error al iniciar sesión')));
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Fondo blanco
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -61,12 +64,14 @@ class RegisterScreen extends StatelessWidget {
               // Logo
               SizedBox(
                 height: 100,
-                child: Image.asset('assets/Icon-192.png'), // Ajusta tu logo
+                child: Image.asset(
+                  'assets/Icon-192.png',
+                ), // Cambia tu logo aquí
               ),
               const SizedBox(height: 40),
 
               const Text(
-                'Registro',
+                'Iniciar Sesión',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -74,20 +79,6 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Username
-              TextField(
-                controller: usernameCtrl,
-                decoration: InputDecoration(
-                  labelText: 'Nombre de usuario',
-                  filled: true,
-                  fillColor: Colors.blue[50],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
 
               // Email
               TextField(
@@ -103,7 +94,7 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Password
+              // Contraseña
               TextField(
                 controller: passwordCtrl,
                 obscureText: true,
@@ -118,12 +109,12 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Botón de registro
+              // Botón de login
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () => registerUser(context),
+                  onPressed: loginUser,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightBlue, // Celeste
                     foregroundColor: Colors.white,
@@ -132,23 +123,23 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Registrarse',
+                    'Iniciar sesión',
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
 
-              // Link a login
+              // Link a registro
               TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => LoginScreen()),
+                    MaterialPageRoute(builder: (_) => RegisterScreen()),
                   );
                 },
                 child: const Text(
-                  '¿Ya tenés cuenta? Iniciar sesión',
+                  '¿No tenés cuenta? Registrate',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
@@ -158,5 +149,4 @@ class RegisterScreen extends StatelessWidget {
       ),
     );
   }
-
 }
