@@ -8,7 +8,7 @@ class RegisterScreen extends StatelessWidget {
   final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
 
-   RegisterScreen({super.key});
+  RegisterScreen({super.key});
 
   void registerUser(BuildContext context) async {
     final String username = usernameCtrl.text.trim();
@@ -47,7 +47,7 @@ class RegisterScreen extends StatelessWidget {
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -60,8 +60,8 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 40),
               // Logo
               SizedBox(
-                height: 100,
-                child: Image.asset('assets/logo 1.png'), // Ajusta tu logo
+                height: 200,
+                child: Image.asset('assets/logo_1.png'), // Ajusta tu logo
               ),
               const SizedBox(height: 40),
 
@@ -158,5 +158,4 @@ class RegisterScreen extends StatelessWidget {
       ),
     );
   }
-
 }

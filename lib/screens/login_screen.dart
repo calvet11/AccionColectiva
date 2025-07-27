@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue, // Fondo blanco
+      backgroundColor: Colors.white, // Fondo blanco
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -64,9 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
               // Logo
               SizedBox(
                 height: 200,
-                child: Image.asset(
-                  'assets/logo_1.png',
-                ), // Cambia tu logo aquí
+                child: Image.asset('assets/logo_1.png'), // Cambia tu logo aquí
               ),
               const SizedBox(height: 40),
 
