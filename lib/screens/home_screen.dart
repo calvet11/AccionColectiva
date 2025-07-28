@@ -27,8 +27,19 @@ class HomeScreen extends StatelessWidget {
                 '¿Qué querés hacer hoy?',
                 style: TextStyle(fontSize: 18, color: Colors.lightBlue),
               ),
-              const SizedBox(height: 40),
-
+              // Logo
+              SizedBox(
+                height: 250,
+                child: Image.asset(
+                  'assets/logo_1.png',),
+              ),
+              const SizedBox(height: 10),
+               //Slogan
+               const Text(
+                'Nos visibiliza,organiza y fortalece.Nos necesitamos.',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+              const SizedBox(height:40),
               // Botón 1: Crear acción
               SizedBox(
                 width: double.infinity,

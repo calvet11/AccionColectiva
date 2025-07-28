@@ -77,6 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 200,
                 child: Image.asset('assets/logo_1.png'), // Cambia tu logo aquí
               ),
+              const SizedBox(height: 10),
+              //Slogan
+               const Text(
+                'Nos visibiliza,organiza y fortalece.Nos necesitamos.',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+              
               const SizedBox(height: 40),
 
               const Text(
