@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'explorar_acciones_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -45,6 +46,7 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                     
                     // Navegar a crear acción
                   },
                   style: ElevatedButton.styleFrom(
@@ -67,6 +69,11 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () {
+                    Navigator.push(
+                       context,
+    MaterialPageRoute(builder: (context) => const ExplorarAccionesScreen()),
+  );
+                    
                     // Navegar a explorar acciones
                   },
                   style: OutlinedButton.styleFrom(
