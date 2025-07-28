@@ -18,36 +18,47 @@ class _LoginScreenState extends State<LoginScreen> {
     final String email = emailCtrl.text.trim();
     final String password = passwordCtrl.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Completa todos los campos')),
-      );
+    // Validación de campos vacíos
+    final bool camposVacios = email.isEmpty || password.isEmpty;
+    if (camposVacios) {
+      mostrarMensaje("Completa todos los campos");
       return;
     }
 
     try {
-      final usersRef = FirebaseFirestore.instance.collection('users');
-      final snapshot = await usersRef
-          .where('email', isEqualTo: email)
-          .where('password', isEqualTo: password)
-          .get();
+      // Referencia a la colección "users" en Firestore
+      final CollectionReference usersRef = FirebaseFirestore.instance
+          .collection('users');
 
-      if (snapshot.docs.isNotEmpty) {
+      // Consulta al documento que coincide con el email y la contraseña
+      final Query query = usersRef
+          .where('email', isEqualTo: email)
+          .where('password', isEqualTo: password);
+
+      final QuerySnapshot snapshot = await query.get();
+
+      final bool usuarioEncontrado = snapshot.docs.isNotEmpty;
+
+      if (usuarioEncontrado) {
+        // Navegación a HomeScreen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(
+            builder: (BuildContext context) => const HomeScreen(),
+          ),
         );
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Credenciales inválidas')));
+        mostrarMensaje("Credenciales inválidas");
       }
     } catch (e) {
-      print('Error al iniciar sesión: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Error al iniciar sesión')));
+      print("Error al iniciar sesión: $e");
+      mostrarMensaje("Error al iniciar sesión");
     }
+  }
+
+  void mostrarMensaje(String mensaje) {
+    final SnackBar snackBar = SnackBar(content: Text(mensaje));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override

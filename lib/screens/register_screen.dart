@@ -11,11 +11,15 @@ class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
 
   void registerUser(BuildContext context) async {
-    final String username = usernameCtrl.text.trim();
-    final String email = emailCtrl.text.trim();
-    final String password = passwordCtrl.text;
+    // Obtener los valores de los campos
+    final String usernameIngresado = usernameCtrl.text.trim();
+    final String emailIngresado = emailCtrl.text.trim();
+    final String passwordIngresado = passwordCtrl.text;
 
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+    // Validar que los campos no estén vacíos
+    if (usernameIngresado.isEmpty ||
+        emailIngresado.isEmpty ||
+        passwordIngresado.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Completa todos los campos')),
       );
@@ -23,24 +27,31 @@ class RegisterScreen extends StatelessWidget {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('users').add({
-        'username': username,
-        'email': email,
-        'password': password, // en una app real, deberías hashearla
+      // Referencia a la colección "users" en Firebase
+      CollectionReference usuariosRef = FirebaseFirestore.instance.collection(
+        'users',
+      );
+
+      // Crear un nuevo documento en la colección con los datos del usuario
+      await usuariosRef.add({
+        'username': usernameIngresado,
+        'email': emailIngresado,
+        'password':
+            passwordIngresado, // Nota: Deberías encriptarla si es una app real
       });
 
-      // Limpiar campos
+      // Limpiar los campos luego del registro exitoso
       usernameCtrl.clear();
       emailCtrl.clear();
       passwordCtrl.clear();
 
-      // Navegar a HomeScreen
+      // Redirigir al usuario a la pantalla de Login
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
-    } catch (e) {
-      print('Error al registrar usuario: $e');
+    } catch (error) {
+      print('Error al registrar usuario: $error');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Error al registrar')));
