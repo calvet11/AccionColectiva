@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'explorar_acciones_screen.dart';
-
+import 'crear_accion_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 10),
                //Slogan
                const Text(
-                'Nos visibiliza,organiza y fortalece.Nos necesitamos.',
+                'Nos visibiliza, organiza y fortalece. Nos necesitamos.',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
               const SizedBox(height:40),
@@ -46,7 +46,10 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                     
+                     Navigator.push(
+                       context,
+                        MaterialPageRoute(builder: (_) => const CrearAccionScreen()),
+  );
                     // Navegar a crear acción
                   },
                   style: ElevatedButton.styleFrom(
