@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final user = FirebaseAuth.instance.currentUser;
+final userId = user?.uid; // Puede ser null si no está logueado
 
 class CrearAccionScreen extends StatefulWidget {
   const CrearAccionScreen({super.key});
@@ -181,42 +187,40 @@ class _CrearAccionScreenState extends State<CrearAccionScreen> {
             const SizedBox(height: 20),
 
             ElevatedButton(
-              onPressed: () {
-                if (tituloController.text.trim().isEmpty ||
-                    descripcionController.text.trim().isEmpty ||
-                    categoriaSeleccionada == null ||
-                    ubicacionController.text.trim().isEmpty ||
-                    objetivoController.text.trim().isEmpty ||
-                    plazoController.text.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, complete todos los campos obligatorios')),
-                  );
-                  return;
-                }
+              onPressed: () async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    // El usuario no está logueado, manejá este caso (ej: pedir login)
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Debes iniciar sesión para crear una acción')),
+    );
+    return;
+  }
 
-                // Aquí se procesan los datos. Por ahora, mostramos un resumen:
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Propuesta guardada'),
-                    content: Text(
-                      'Título: ${tituloController.text}\n'
-                      'Descripción: ${descripcionController.text}\n'
-                      'Categoría: $categoriaSeleccionada\n'
-                      'Ubicación: ${ubicacionController.text}\n'
-                      'Objetivo: ${objetivoController.text}\n'
-                      'Plazo: ${plazoController.text} días\n'
-                      '¿Admite sugerencias?: ${admiteSugerencias ? "Sí" : "No"}',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Aceptar'),
-                      ),
-                    ],
-                  ),
-                );
-              },
+  try {
+    await FirebaseFirestore.instance.collection('propuestas').add({
+      'usuarioId': user.uid,  // <-- Guardamos el ID del usuario aquí
+      'titulo': tituloController.text.trim(),
+      'descripcion': descripcionController.text.trim(),
+      'categoria': categoriaSeleccionada,
+      'ubicacion': ubicacionController.text.trim(),
+      'objetivo': objetivoController.text.trim(),
+      'plazo': int.tryParse(plazoController.text.trim()) ?? 0,
+      'admiteSugerencias': admiteSugerencias,
+      'fechaCreacion': FieldValue.serverTimestamp(),
+    });
+
+    Navigator.pop(context);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('La propuesta se guardó correctamente.')),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al guardar en Firestore: $e')),
+    );
+  }
+},
               child: const Text('Guardar propuesta'),
             ),
           ],
