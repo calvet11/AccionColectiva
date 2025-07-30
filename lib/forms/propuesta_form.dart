@@ -27,7 +27,33 @@ class _PropuestaFormState extends State<PropuestaForm> {
     'Transporte',
     'Otros',
   ];
+// agregue funcion
+List<Map<String, dynamic>> contactos = [];
+List<String> contactosSeleccionados = [];
 
+Future<void> cargarContactos() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
+
+  final snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('Nodos')
+      .get();
+
+  setState(() {
+    contactos = snapshot.docs.map((doc) => {
+      'email': doc['email'],
+      'userId': doc['userId'],
+    }).toList();
+  });
+}
+
+@override
+void initState() {
+  super.initState();
+  cargarContactos();
+}
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -106,6 +132,26 @@ class _PropuestaFormState extends State<PropuestaForm> {
             ],
           ),
           const SizedBox(height: 20),
+          const Text('¿A qué contactos les das acceso? *'),
+contactos.isEmpty
+    ? const Text('No tenés contactos cargados.')
+    : Column(
+        children: contactos.map((contacto) {
+          return CheckboxListTile(
+            title: Text(contacto['email']),
+            value: contactosSeleccionados.contains(contacto['userId']),
+            onChanged: (bool? seleccionado) {
+              setState(() {
+                if (seleccionado == true) {
+                  contactosSeleccionados.add(contacto['userId']);
+                } else {
+                  contactosSeleccionados.remove(contacto['userId']);
+                }
+              });
+            },
+          );
+        }).toList(),
+      ),
           ElevatedButton(
             onPressed: () async {
               final user = FirebaseAuth.instance.currentUser;
@@ -118,16 +164,17 @@ class _PropuestaFormState extends State<PropuestaForm> {
 
               try {
                 await FirebaseFirestore.instance.collection('propuestas').add({
-                  'usuarioId': user.uid,
-                  'titulo': tituloController.text.trim(),
-                  'descripcion': descripcionController.text.trim(),
-                  'categoria': categoriaSeleccionada,
-                  'ubicacion': ubicacionController.text.trim(),
-                  'objetivo': objetivoController.text.trim(),
-                  'plazo': int.tryParse(plazoController.text.trim()) ?? 0,
-                  'admiteSugerencias': admiteSugerencias,
-                  'fechaCreacion': FieldValue.serverTimestamp(),
-                });
+  'usuarioId': user.uid,
+  'titulo': tituloController.text.trim(),
+  'descripcion': descripcionController.text.trim(),
+  'categoria': categoriaSeleccionada,
+  'ubicacion': ubicacionController.text.trim(),
+  'objetivo': objetivoController.text.trim(),
+  'plazo': int.tryParse(plazoController.text.trim()) ?? 0,
+  'admiteSugerencias': admiteSugerencias,
+  'fechaCreacion': FieldValue.serverTimestamp(),
+  'autorizados': contactosSeleccionados,
+});
 
                 if (context.mounted) Navigator.pop(context);
 

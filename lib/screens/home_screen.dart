@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'explorar_acciones_screen.dart';
 import 'crear_accion_screen.dart';
+import 'mis_nodos_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -31,26 +33,24 @@ class HomeScreen extends StatelessWidget {
               // Logo
               SizedBox(
                 height: 250,
-                child: Image.asset(
-                  'assets/logo_1.png',),
+                child: Image.asset('assets/logo_1.png'),
               ),
               const SizedBox(height: 10),
-               //Slogan
-               const Text(
+              // Slogan
+              const Text(
                 'Nos visibiliza, organiza y fortalece. Nos necesitamos.',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-              const SizedBox(height:40),
+              const SizedBox(height: 40),
               // Botón 1: Crear acción
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                     Navigator.push(
-                       context,
-                        MaterialPageRoute(builder: (_) => const CrearAccionScreen()),
-  );
-                    // Navegar a crear acción
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CrearAccionScreen()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
@@ -66,18 +66,15 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               // Botón 2: Explorar acciones
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () {
                     Navigator.push(
-                       context,
-    MaterialPageRoute(builder: (context) => const ExplorarAccionesScreen()),
-  );
-                    
-                    // Navegar a explorar acciones
+                      context,
+                      MaterialPageRoute(builder: (context) => const ExplorarAccionesScreen()),
+                    );
                   },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.lightBlue),
@@ -96,8 +93,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-
-      // 🔽 Barra inferior de navegación
+      // Barra inferior de navegación
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
@@ -107,11 +103,24 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.notifications),
             label: 'Notificaciones',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Nodos'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.hub), // el icono que prefieras para "Nodos"
+            label: 'Nodos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
         ],
-        // onTap lo implementás después
-        onTap: (index) {},
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MisNodosScreen()),
+            );
+          }
+          // Aquí podrías agregar navegación para otros índices si querés
+        },
       ),
     );
   }

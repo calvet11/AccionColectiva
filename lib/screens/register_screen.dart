@@ -38,8 +38,10 @@ class RegisterScreen extends StatelessWidget {
           .collection('users')
           .doc(userCredential.user!.uid)
           .set({
+        'uid': userCredential.user!.uid, 
         'username': usernameIngresado,
         'email': emailIngresado,
+        'creado': FieldValue.serverTimestamp(),
       });
 
       // Limpiar campos
