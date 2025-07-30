@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart';
-import '/screens/register_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,57 +14,51 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController passwordCtrl = TextEditingController();
 
+  void mostrarMensaje(String texto) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(texto)),
+    );
+  }
+
   void loginUser() async {
     final String email = emailCtrl.text.trim();
     final String password = passwordCtrl.text;
 
-    // Validación de campos vacíos
-    final bool camposVacios = email.isEmpty || password.isEmpty;
-    if (camposVacios) {
+    if (email.isEmpty || password.isEmpty) {
       mostrarMensaje("Completa todos los campos");
       return;
     }
 
     try {
-      // Referencia a la colección "users" en Firestore
-      final CollectionReference usersRef = FirebaseFirestore.instance
-          .collection('users');
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
-      // Consulta al documento que coincide con el email y la contraseña
-      final Query query = usersRef
-          .where('email', isEqualTo: email)
-          .where('password', isEqualTo: password);
+      final User? user = userCredential.user;
 
-      final QuerySnapshot snapshot = await query.get();
-
-      final bool usuarioEncontrado = snapshot.docs.isNotEmpty;
-
-      if (usuarioEncontrado) {
-        // Navegación a HomeScreen
+      if (user != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => const HomeScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        mostrarMensaje("Usuario no encontrado");
+      } else if (e.code == 'wrong-password') {
+        mostrarMensaje("Contraseña incorrecta");
       } else {
-        mostrarMensaje("Credenciales inválidas");
+        mostrarMensaje("Error: ${e.message}");
       }
     } catch (e) {
-      print("Error al iniciar sesión: $e");
-      mostrarMensaje("Error al iniciar sesión");
+      mostrarMensaje("Error inesperado");
+      print("Login error: $e");
     }
-  }
-
-  void mostrarMensaje(String mensaje) {
-    final SnackBar snackBar = SnackBar(content: Text(mensaje));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -72,22 +66,14 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-              // Logo
               SizedBox(
                 height: 200,
-                child: Image.asset('assets/logo_1.png'), // Cambia tu logo aquí
+                child: Image.asset('assets/logo_1.png'), // tu logo
               ),
-              const SizedBox(height: 10),
-              //Slogan
-               const Text(
-                'Nos visibiliza,organiza y fortalece.Nos necesitamos.',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              
               const SizedBox(height: 40),
 
               const Text(
-                'Iniciar Sesión',
+                'Iniciar sesión',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -96,7 +82,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 32),
 
-              // Email
               TextField(
                 controller: emailCtrl,
                 decoration: InputDecoration(
@@ -110,7 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Contraseña
               TextField(
                 controller: passwordCtrl,
                 obscureText: true,
@@ -125,28 +109,26 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Botón de login
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: loginUser,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue, // Celeste
+                    backgroundColor: Colors.lightBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
-                    'Iniciar sesión',
+                    'Ingresar',
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
 
-              // Link a registro
               TextButton(
                 onPressed: () {
                   Navigator.push(

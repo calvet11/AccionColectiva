@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'accioncolectiva-4c17c.firebasestorage.app',
     measurementId: 'G-NLK24H2TLE',
   );
+
 }
