@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // IMPORTANTE para logout
+import 'login_screen.dart'; // IMPORTANTE para navegar al login después de logout
 import 'explorar_acciones_screen.dart';
 import 'crear_accion_screen.dart';
 import 'mis_nodos_screen.dart';
@@ -6,11 +8,28 @@ import 'mis_nodos_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  void logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco
-      body: SafeArea(
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => logout(context),
+            tooltip: 'Cerrar sesión',
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -30,19 +49,16 @@ class HomeScreen extends StatelessWidget {
                 '¿Qué querés hacer hoy?',
                 style: TextStyle(fontSize: 18, color: Colors.lightBlue),
               ),
-              // Logo
               SizedBox(
                 height: 250,
                 child: Image.asset('assets/logo_1.png'),
               ),
               const SizedBox(height: 10),
-              // Slogan
               const Text(
                 'Nos visibiliza, organiza y fortalece. Nos necesitamos.',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
               const SizedBox(height: 40),
-              // Botón 1: Crear acción
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -66,7 +82,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Botón 2: Explorar acciones
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -93,7 +108,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      // Barra inferior de navegación
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
@@ -104,7 +118,7 @@ class HomeScreen extends StatelessWidget {
             label: 'Notificaciones',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.hub), // el icono que prefieras para "Nodos"
+            icon: Icon(Icons.hub),
             label: 'Nodos',
           ),
           BottomNavigationBarItem(
@@ -119,7 +133,7 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const MisNodosScreen()),
             );
           }
-          // Aquí podrías agregar navegación para otros índices si querés
+          // Puedes agregar más navegación para otros índices si querés
         },
       ),
     );

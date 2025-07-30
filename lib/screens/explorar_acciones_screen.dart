@@ -36,18 +36,24 @@ class _ExplorarAccionesScreenState extends State<ExplorarAccionesScreen> {
         .where('autorizados', arrayContains: currentUserId)
         .get();
 
-    // Las propias las marcamos con tipo = 'Propia'
+    // Las propias las marcamos con tipo = 'Propia' y agregamos el id
     final propias = propiasSnap.docs.map((doc) {
       final data = doc.data();
-      data['tipo'] = 'Propia';
-      return data;
+      return {
+        ...data,
+        'tipo': 'Propia',
+        'id': doc.id,
+      };
     }).toList();
 
-    // Las autorizadas las marcamos con tipo = 'Autorizada'
+    // Las autorizadas las marcamos con tipo = 'Autorizada' y agregamos el id
     final autorizadas = autorizadasSnap.docs.map((doc) {
       final data = doc.data();
-      data['tipo'] = 'Autorizada';
-      return data;
+      return {
+        ...data,
+        'tipo': 'Autorizada',
+        'id': doc.id,
+      };
     }).where((data) => data['usuarioId'] != currentUserId).toList();
 
     return [...propias, ...autorizadas];
@@ -81,21 +87,10 @@ class _ExplorarAccionesScreenState extends State<ExplorarAccionesScreen> {
               final propuesta = propuestas[index];
               final titulo = propuesta['titulo'] ?? 'Sin título';
               final descripcion = propuesta['descripcion'] ?? '';
-              final tipo = propuesta['tipo']; // 'Propia' o 'Autorizada'
+              final tipo = propuesta['tipo'];
 
               return ListTile(
                 title: Text(titulo),
-                onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => DetallePropuestaScreen(
-        propuesta: propuesta,
-        esPropia: tipo == 'Propia',
-      ),
-    ),
-  );
-},
                 subtitle: Text(descripcion),
                 trailing: Text(
                   tipo,
@@ -104,6 +99,18 @@ class _ExplorarAccionesScreenState extends State<ExplorarAccionesScreen> {
                     color: tipo == 'Propia' ? Colors.green : Colors.orange,
                   ),
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetallePropuestaScreen(
+                        propuesta: propuesta,
+                        propuestaId: propuesta['id'],
+                        esPropia: tipo == 'Propia',
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );

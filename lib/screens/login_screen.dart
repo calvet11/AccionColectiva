@@ -42,6 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on FirebaseAuthException catch (e) {
+       print('Código de error: ${e.code}');
+        print('Mensaje: ${e.message}');
       if (e.code == 'user-not-found') {
         mostrarMensaje("Usuario no encontrado");
       } else if (e.code == 'wrong-password') {
